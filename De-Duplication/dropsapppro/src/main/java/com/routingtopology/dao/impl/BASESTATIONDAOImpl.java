@@ -1,0 +1,235 @@
+package com.routingtopology.dao.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Repository;
+
+import com.routingtopology.constants.TopologyConstantsIF;
+import com.routingtopology.dao.inter.BASESTATIONDAOIF;
+import com.routingtopology.dao.inter.SquareZoneDAOIF;
+import com.routingtopology.dao.inter.SquareZoneLEEACHDAOIF;
+import com.routingtopology.exception.RoutingException;
+import com.routingtopology.value.NodeInfoForSquare;
+import com.routingtopology.value.TopologyInfoValue;
+
+@Repository
+public class BASESTATIONDAOImpl extends RoutingDaoImpl implements
+		BASESTATIONDAOIF {
+
+	private static final String CLASS_NAME = "Class:SquareZoneDAOImpl--->";
+	private static final String METHOD_NAME = "Method:";
+	private static final String START_NAME = "START";
+	private static final String END_NAME = "END";
+
+	@Override
+	public boolean deleteSquareZoneTopology() {
+		System.out
+				.println("Class-->SquareZoneDAOImpl:Method-->deleteSquareZoneTopology() Start");
+
+		boolean deleteFlag = false;
+		try {
+			deleteFlag = delete(DELETE_SQUAREZONETOPOLOGY_BS__QUERY);
+		} catch (Exception e) {
+			System.out
+					.println("Class-->SquareZoneDAOImpl:Method-->deleteSquareZoneTopology() Exception"
+							+ e.getMessage());
+			deleteFlag = false;
+			return deleteFlag;
+		}
+		System.out
+				.println("Class-->SquareZoneDAOImpl:Method-->deleteSquareZoneTopology() End");
+		return deleteFlag;
+
+	}
+
+	@Override
+	public boolean insertSquareZoneTopology(
+			List<TopologyInfoValue> topologyInfoValue) throws RoutingException {
+
+		System.out.println(CLASS_NAME + METHOD_NAME + "insertSquareZoneTopology()"
+				+ START_NAME);
+		boolean insertAngularTopology = false;
+		try {
+			insertAngularTopology = insertTopologyWithSquareConfig(
+					topologyInfoValue, INSERT_SQUAREZONETOPOLOGY_BS_QUERY);
+		} catch (Exception e) {
+			System.out
+					.println(CLASS_NAME + METHOD_NAME
+							+ "insertSquareZoneTopology()" + "Exception:"
+							+ e.getMessage());
+			insertAngularTopology = false;
+			return insertAngularTopology;
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME + "insertSquareZoneTopology()"
+				+ END_NAME);
+		return insertAngularTopology;
+
+	}
+
+	@Override
+	public List<TopologyInfoValue> retriveSquareZoneTopology()
+			throws RoutingException {
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveSquareZoneTopology()" + START_NAME);
+		List<TopologyInfoValue> topologyInfoValueList = null;
+		try {
+			topologyInfoValueList = retriveTopologyWithSquareConfig(RETRIVE_SQUARETOPOLOGY_BS_QUERY);
+		} catch (DataAccessException dae) {
+			throw new RoutingException(dae.getMessage());
+		} catch (Exception e) {
+			System.out
+					.println(CLASS_NAME + METHOD_NAME + "retriveSquareZoneTopology() Exception"
+							+ e.getMessage());
+		}
+		System.out
+				.println(CLASS_NAME + METHOD_NAME + "retriveSquareZoneTopology() End");
+		return topologyInfoValueList;
+	}
+
+	@Override
+	public boolean updateSquareZoneTopology(
+			List<TopologyInfoValue> topologyInfoValue) {
+
+		System.out.println(CLASS_NAME + METHOD_NAME + "updateSquareZoneTopology()"
+				+ START_NAME);
+		boolean updationFlag = false;
+		try {
+			if (topologyInfoValue != null && topologyInfoValue.size() > 0) {
+				for (TopologyInfoValue topInfoValue : topologyInfoValue) {
+					Map<String, Object> map = createTopologyMapWithSquare(topInfoValue);
+					update(UPDATE_SQUAREZONETOPOLOGY_BS_QUERY, map);
+					updationFlag = true;
+				}
+			}
+
+		} catch (Exception e) {
+			System.out.println(CLASS_NAME + METHOD_NAME
+					+ "updateSquareZoneTopology()" + "Exception-->"
+					+ e.getMessage());
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME + "updateSquareZoneTopology()"
+				+ END_NAME);
+		return updationFlag;
+	}
+
+	@Override
+	public List<Integer> retriveDistinctSquareZoneIds() {
+		// TODO Auto-generated method stub
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveDistinctSquareZoneIds()" + START_NAME);
+		List<Integer> topologyInfoValueList = null;
+		try {
+			topologyInfoValueList = retriveZoneIDs(RETRIVE_ZONEIDSQUARETOPOLOGY_BS);
+
+		} catch (Exception e) {
+			System.out.println(CLASS_NAME + METHOD_NAME
+					+ "retriveDistinctSquareZoneIds() Exception" + e.getMessage());
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveDistinctSquareZoneIds()" + END_NAME);
+		return topologyInfoValueList;
+	}
+
+	@Override
+	public boolean updateNodeIdWithLeaderSquareZone(int nodeId, int leaderValue) {
+		// TODO Auto-generated method stub
+		System.out.println(CLASS_NAME + METHOD_NAME + "updateNodeIdWithLeaderSquareZone()"
+				+ START_NAME);
+		boolean updationFlag = false;
+		// making greater than =0
+		try {
+			if (nodeId > 0 && leaderValue >= 0) {
+				Map<String, Object> map = createMapNodeIdLeaderValue(nodeId, leaderValue);
+				update(UPDATE_ZONELEADER_FORNODEID_SQUARETOPOLOGY_BS, map);
+				updationFlag = true;
+
+			}
+
+		} catch (Exception e) {
+			System.out.println(CLASS_NAME + METHOD_NAME
+					+ "updateNodeIdWithLeaderSquareZone()" + "Exception-->"
+					+ e.getMessage());
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME + "updateNodeIdWithLeaderSquareZone()"
+				+ END_NAME);
+		return updationFlag;
+	}
+
+	private Map<String, Object> createMapNodeIdLeaderValue(int nodeId,
+			int leaderValue) {
+		Map<String, Object> mapValue = new HashMap<String, Object>();
+		mapValue.put(TopologyConstantsIF.NODEID_COL, nodeId);
+		mapValue.put(TopologyConstantsIF.ZONELEADER_COL, leaderValue);
+		return mapValue;
+	}
+
+	@Override
+	public List<NodeInfoForSquare> retriveNodeInfoForZoneIDSquareZone(int zoneId) {
+		// TODO Auto-generated method stub
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveNodeInfoForZoneIDSquareZone()" + START_NAME);
+		List<NodeInfoForSquare> topologyInfoValueList = null;
+		try {
+			topologyInfoValueList = retriveTopologyWithSquareConfigLimited(
+					RETRIVE_NODEIDS_DETAILS_FOR_ZONEID_SQUARETOPOLOGY_BS, createMapForZoneId(zoneId));
+
+		} catch (Exception e) {
+			System.out.println(CLASS_NAME + METHOD_NAME
+					+ "retriveNodeInfoForZoneIDSquareZone() Exception" + e.getMessage());
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveNodeInfoForZoneIDSquareZone()" + END_NAME);
+		return topologyInfoValueList;
+	}
+
+	private Map<String, Object> createMapForZoneId(int zoneId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(TopologyConstantsIF.ZONEID_COL, zoneId);
+		return map;
+	}
+
+	private Map<String, Object> createMapForZoneLeader(boolean zoneLeader) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(TopologyConstantsIF.ZONELEADER_COL, zoneLeader);
+		return map;
+	}
+
+	@Override
+	public int retriveSquareZoneTopologyCount() {
+		System.out.println("Class-->SquareZoneDAOImpl:Method-->"
+				+ "retriveSquareZoneTopologyCount()" + "Start");
+		int noOfRecords = 0;
+		try {
+			noOfRecords = queryForInt(RETRIVE_SQUARETOPOLOGY_COUNT);
+		} catch (Exception e) {
+			System.out.println("Class-->SquareZoneDAOImpl:Method-->"
+					+ "retriveSquareZoneTopologyCount()" + " Exception"
+					+ e.getMessage());
+		}
+		System.out.println("Class-->SquareZoneDAOImpl:Method-->"
+				+ "retriveSquareZoneTopologyCount()" + "End");
+		return noOfRecords;
+	}
+
+	@Override
+	public List<Integer> retriveZoneLeaders() {
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveZoneLeaders()" + START_NAME);
+		List<Integer> nodeIdList = null;
+		try {
+			nodeIdList = retriveZoneLeaders(RETRIVE_NODEIDS_WHO_ARE_ZONE_LEADERS_SQUARE_BS_TOPOLOGY,
+					createMapForZoneLeader(true));
+
+		} catch (Exception e) {
+			System.out.println(CLASS_NAME + METHOD_NAME
+					+ "retriveZoneLeaders() Exception" + e.getMessage());
+		}
+		System.out.println(CLASS_NAME + METHOD_NAME
+				+ "retriveZoneLeaders()" + END_NAME);
+		return nodeIdList;
+	}
+
+}
